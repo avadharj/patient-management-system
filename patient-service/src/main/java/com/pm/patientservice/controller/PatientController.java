@@ -1,11 +1,12 @@
 package com.pm.patientservice.controller;
 
+import com.pm.patientservice.dto.PatientRequestDTO;
 import com.pm.patientservice.dto.PatientResponseDTO;
 import com.pm.patientservice.service.PatientService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +27,12 @@ public class PatientController {
         List<PatientResponseDTO> patients = patientService.getPatients();
         // Return a status code 200 back to the client meaning all went ok:
         return ResponseEntity.ok(patientService.getPatients());
+    }
+    // the valid tag checks the valid tag and if there are any invalidities, spring goes and checks for erros
+    // RequestBody tag converts the json request to our patient request DTO for us
+    @PostMapping
+    public ResponseEntity<PatientResponseDTO> createPatient(@Valid @RequestBody PatientRequestDTO patientRequestDTO) {
+        PatientResponseDTO patientResponseDTO = patientService.createPatient(patientRequestDTO);
+        return ResponseEntity.ok(patientResponseDTO); // this will include the latest info from the db
     }
 }

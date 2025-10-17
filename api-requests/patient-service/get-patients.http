@@ -2,5 +2,4 @@
 GET http ://localhost:4000/patients
 
 ### the output of running this at the moment is an array of entries corresponding to what we had entered previously
-
 ###

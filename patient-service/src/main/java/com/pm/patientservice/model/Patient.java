@@ -74,7 +74,7 @@ public class Patient {
         return dateOfBirth;
     }
 
-    public void setBirthDate(LocalDate birthDate) {
+    public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

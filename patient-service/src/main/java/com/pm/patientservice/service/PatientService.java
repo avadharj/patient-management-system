@@ -1,5 +1,6 @@
 package com.pm.patientservice.service;
 
+import com.pm.patientservice.dto.PatientRequestDTO;
 import com.pm.patientservice.dto.PatientResponseDTO;
 import com.pm.patientservice.mapper.PatientMapper;
 import com.pm.patientservice.model.Patient;
@@ -26,5 +27,16 @@ public class PatientService {
         // the RHS is similar to a for loop i.e it iterates over each element in the for loop and then we get the
         // patient list
         return patients.stream().map(patient -> PatientMapper.toDTO(patient)).toList();
+    }
+
+    public PatientResponseDTO createPatient(PatientRequestDTO patientRequestDTO) {
+        Patient newPatient = patientRepository.save(PatientMapper.toModel(patientRequestDTO));
+        // we cant save the patientRequestDTO to the repository as it is not compatible
+        // need to convert it to a format that is compatible using the Patient Mapper
+        // that is why we pass in the result of applying PatientMapper's toModel on to the request DTO object
+        // finally, behind the scenes it is this that gets persisted to the db
+
+        // we can convert the newPatient formed back to a DTO and return that to the controller
+        return PatientMapper.toDTO(newPatient);
     }
 }
