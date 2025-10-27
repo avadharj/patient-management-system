@@ -1,5 +1,7 @@
 package com.pm.patientservice.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,6 +13,8 @@ import java.util.Map;
 // ControllerAdvice class allows centralized exception handling and makes the controller code a lot cleaner
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     // all the JPA level exceptions like the invalidity of some input etc is caught and placed within ex and this class
@@ -27,6 +31,18 @@ public class GlobalExceptionHandler {
                 error -> errors.put(error.getField(),error.getDefaultMessage()));
 
         // badRequest means that a 400 status code is passed to the calling client along with a json having all errors
+        return ResponseEntity.badRequest().body(errors);
+    }
+
+    // there are two steps in the below error handler
+    // one is for the client and one is for us to catch any errors
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<Map<String,String>> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex) {
+
+        log.warn("Email already exists {}", ex.getMessage()); // printing out the error and also getting the error
+        // message in case it contains any valuable information
+        Map<String,String> errors = new HashMap<>();
+        errors.put("message","Email already exists");
         return ResponseEntity.badRequest().body(errors);
     }
 }

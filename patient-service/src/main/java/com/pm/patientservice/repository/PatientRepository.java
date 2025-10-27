@@ -11,4 +11,5 @@ import java.util.UUID;
 // extending JPA repository gives us access to a lot of out-of-the-box CRUD functionalities
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, UUID> {
+    boolean existsByEmail(String email);
 }
