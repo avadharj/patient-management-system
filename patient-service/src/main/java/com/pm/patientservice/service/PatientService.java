@@ -3,13 +3,16 @@ package com.pm.patientservice.service;
 import com.pm.patientservice.dto.PatientRequestDTO;
 import com.pm.patientservice.dto.PatientResponseDTO;
 import com.pm.patientservice.exception.EmailAlreadyExistsException;
+import com.pm.patientservice.exception.PatientNotFoundException;
 import com.pm.patientservice.mapper.PatientMapper;
 import com.pm.patientservice.model.Patient;
 import com.pm.patientservice.repository.PatientRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 // this class is where all the business logic and DTO conversion happens for a given request
 @Service
@@ -45,5 +48,29 @@ public class PatientService {
 
         // we can convert the newPatient formed back to a DTO and return that to the controller
         return PatientMapper.toDTO(newPatient);
+    }
+
+    // function to update patient details
+    // achieves this by taking in the id associated with that specific patient
+    public PatientResponseDTO updatePatient(UUID id, PatientRequestDTO patientRequestDTO) {
+        // this searches the repository for the id passed in the input
+        // initially in case the id was not found in the repository, a null was returned, but now we have provided an
+        // exception instead
+        Patient patient = patientRepository.findById(id).orElseThrow(()
+                -> new PatientNotFoundException("Patient not found with ID: " + id));
+
+        if (patientRepository.existsByEmailAndIdNot(patientRequestDTO.getEmail(), id)) {
+            throw new EmailAlreadyExistsException("A patient with this email already exists" +
+                    patientRequestDTO.getEmail());
+        }
+        // now we need to ensure that each of the fields are updated which can do using the setters provided
+        patient.setName(patientRequestDTO.getName());
+        patient.setAddress(patientRequestDTO.getAddress());
+        patient.setEmail(patientRequestDTO.getEmail());
+        patient.setDateOfBirth(LocalDate.parse(patientRequestDTO.getDateOfBirth()));
+
+        Patient updatedPatient = patientRepository.save(patient); // JPA handles the update for us
+        // it returns the updated patient object and assigns it to the updated patient object given here
+        return PatientMapper.toDTO(updatedPatient);
     }
 }
