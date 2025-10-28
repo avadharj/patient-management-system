@@ -10,7 +10,6 @@ import com.pm.patientservice.repository.PatientRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -73,4 +72,9 @@ public class PatientService {
         // it returns the updated patient object and assigns it to the updated patient object given here
         return PatientMapper.toDTO(updatedPatient);
     }
+
+    public void deletePatient(UUID id) {
+        patientRepository.deleteById(id);
+    }
+    // we just need to take an id and delete the corresponding entry and nothing needs to be returned
 }
